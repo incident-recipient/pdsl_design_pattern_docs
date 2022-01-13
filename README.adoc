@@ -1,4 +1,7 @@
 = Overview
+
+:toc:
+
 The *Polymorphic Domain Specific Language* design pattern is used to make it possible to develop or test modern applications which are otherwise unable to be handled in a scalable, maintainable way.
 
 This is a particular necessity with the advent of distributed systems or the need to support multiple clients and platforms. A typical web application often has 2 native mobile applications developed for it as well. This creates a problem: to add or test 1 feature it takes _n_ units of work, where _n_ is the total number of clients, platforms or services.
@@ -16,11 +19,11 @@ At it's heart the basic idea is to create a common protocol or language to descr
 A general model for PDSL is as follows:
 
 |===
-Tier | Development Tool Example | Testing Example | Testing Tool Example | Artistic Example | Testing Library Example |
-Domain Specific Language | JVM Bytecode or Language (Java, Kotlin, etc)  | Gherkin Standard | Webdriver Library | 12 Tone Scale |
-Specification Language   | .class File| .feature file | Java, Python, or other  | Code file | Vivaldi's _L'estro armonico_ |
-Interface Definition Language | Java Virtual Machine Specification | ANTLR4 | Webdriver API | Sheet Music |
-Implementation                        | OpenJDK, OracleJDK, JREs, etc   | Java, Python, Golang, TypeScript, etc | Java, Python, Golang, TypeScript, etc | _Concerto for 4 Violins in D minor_ by Antonio Vivaldi, also separate Harpsichord, Organ and other transcriptions by J.S Bach |
+Tier | Development Tool Example | Testing Example | Testing Tool Example | Artistic Example | Testing Library Example 
+Domain Specific Language | JVM Bytecode or Language (Java, Kotlin, etc)  | Gherkin Standard | Webdriver Library | 12 Tone Scale 
+Specification Language   | .class File| .feature file | Java, Python, or other  | Code file | Vivaldi's _L'estro armonico_ 
+Interface Definition Language | Java Virtual Machine Specification | ANTLR4 | Webdriver API | Sheet Music 
+Implementation                        | OpenJDK, OracleJDK, JREs, etc   | Java, Python, Golang, TypeScript, etc | Java, Python, Golang, TypeScript, etc | _Concerto for 4 Violins in D minor_ by Antonio Vivaldi, also separate Harpsichord, Organ and other transcriptions by J.S Bach 
 |===
 
 
@@ -38,7 +41,7 @@ IMPORTANT: The ability to create new programming languages that compile to bytec
 
 === Testing Example
 
-_Gherkin_ is a protocol that was developed for the Cucumber framework. While initially created for the purposes of _Business Driven Developoment_, Gherkin is not only a powerful way of defining test cases, but it is language agnostic. This allows tests created in Gherkin to have multiple implementations for different platforms regardless of the different language needs of each platform.
+_Gherkin_ is a protocol that was developed for the Cucumber framework. While initially created for the purposes of _Business Driven Developoment_, it is often excellent to use as a DSL. Gherkin is not only a powerful way of defining test cases, but it is language agnostic. This allows tests created in Gherkin to have multiple implementations for different platforms regardless of the different language needs of each platform.
 
 
 === Artistic Example
@@ -62,7 +65,7 @@ Because the _.class_ files are just bytecode they can be interpreted later by _J
 === Testing Example
 
 The .feature files created by Gherkin:
-
+[source,cucumber]
 ----
 Feature: Some Application
 
@@ -72,20 +75,20 @@ Feature: Some Application
     Then the result is "2"
 ----
 
-Feature files are easy to scale requirements across different applications or domains because they are language agnostic.
+Feature files make it easy to scale requirements across different applications or domains because they are language agnostic.
 
 === Artistic Example
 
-Musical forms, such as a Ballad, Concerto or Fugue could be viewed as specifications or sub-specifications of a 12 tone DSL if you wanted to be particular. But more generally you could also just say a song is a specification of the DSL also (provided it's constrained to 12 pitches). 
+Musical forms, such as a Ballad, Concerto or Fugue could be viewed as specifications or sub-specifications of a 12 tone DSL if you wanted to be particular. But more generally you could also just say a song is a specification of the DSL provided it's constrained to 12 pitches. 
 
 So a nursery rhyme like _Twinkle, Twinkle Little Star_ can count as a unique specification. So are the compositions of _J.S. Bach_ and modern pop artists.
 
 
 == Interface Definition Language
 
-The purpose of the Interface Definition Language (IDL) is to provide a bridge between our specifications and the (possibly many) clients that will executing it. While our specifications are technically already language agnostic, typically there may be a complex enough need to _interpret_ the specifications that it warrants it's own tier of architecture. That is to say we need a method of taking the highly abstract DSL and begin transforming it into something concrete that a client can understand.
+The purpose of the Interface Definition Language (IDL) is to provide a bridge between our specifications and the (possibly many) clients that will executing it. While our specifications are technically already language agnostic, typically there may be a complex enough need to *interpret* the specifications that it warrants it's own tier of architecture. That is to say we need a method of taking the highly abstract DSL and begin transforming it into something concrete that a client can understand.
 
-The IDL may handle some of the for _handling_ the specification and other supporting tasks required for processing the specification that are too general to be given to lower level implementations.
+The IDL may also be used for *handling* the specification or *coordinating* or *transforming* information from the abstract specification into more concrete data that will be needed by lower level implementations.
 
 Ideally the Interface Definition is 100% abstract or as abstract as possible. It should also typically language agnostic. Some use cases may have an IDL that is tightly coupled to a specific programming language or platform, but this should be avoided when possible to allow scaling to other platforms if needed.
 
@@ -95,16 +98,19 @@ The Java Virtual Machine Specification (JVMS) has the job of converting bytecode
 
 It describes how to do some other necessary work, such as garbage collection, loading class files, security and other infrastructure concerns.
 
+Ultimately if a new platform wants to support Java it can use the JVMS to create a new JVM for itself.
+
 === Testing Example
 
 ==== Cucumber Step Definitions
 
-In traditional Cucumber Step Definition files are used as "glue code" to bind sentences to method execution. However a better alternative for PDSL might be something like ANTLR4, where you can perform the binding of a sentence to a particular method _but in a language agnostic way_. ANTLR4 allows you to use code generation to create interfaces in a variety of programming languages (including Swift and Java, which is probably important if you are developing native mobile apps).
+In traditional Cucumber Step Definition files are used as "glue code" to bind sentences to method execution. However a method to make Cucumber code follow PDSL might be to use something like ANTLR4. ANTLR4 is a parser generator, but for that reason it can be used to bind a sentence to a method call _but in a language agnostic way_. ANTLR4 allows you to use code generation to create interfaces in a variety of programming languages (including Swift and Java, which is probably important if you are developing native mobile apps).
 
 What prevents most standard Cucumber projects from following the PDSL pattern is they provide platform specific code in the step definitions. If these are instead replaced with fully abstract interfaces the tests can instead scale to multiple platforms or even tiers of the testing pyramid.
 
 Here is an example of using step definitions poorly (it cannot scale out)
 
+[source,java]
 ----
 public class SomeStepDefinition {
 
@@ -120,8 +126,9 @@ public class SomeStepDefinition {
 }
 ----
 
-Here the problem is used by creating an Interface Definition Language with simple interfaces
+Here the problem is fixed by creating an Interface Definition Language with simple interfaces
 
+[source,java]
 ----
 
 public interface BuyProducts {
@@ -135,14 +142,18 @@ public class SomeStepDefinition {
 
 	@Given("the customer selects a product in the store")
 	public void givenTheExpression(int x, int y) {
-		// The interface can have a web, android and iOS implementation.
+		// The interface can have a web, android or iOS implementation.
 		// They can use the libraries or frameworks that make sense for them
 		buyProducts.selectProduct();
 	}
 }
 ----
 
-The mere act of using interfaces means that a feature change won't require rewriting _n_ different frameworks. In a best case we just need to update the code in a single location. However we might need another step definition file written in Swift for an iOS codebase. But If ANTLR4 was used to create the IDL instead it's even better: we can keep _all_ different codebases in sync by generating the interface code from an ANTLR grammar!
+The mere act of using interfaces means that a feature change won't require rewriting _n_ different frameworks. In a best case we just need to update the code in a single location. However we might need another step definition file written in Swift to be compatible for an iOS codebase. But If ANTLR4 was used to create the IDL instead it's even better: we can keep _all_ different codebases in sync by generating the interface code from an ANTLR grammar!
+
+With the use of Appium and Webdriver you can technically avoid the need to cross across the language barrier by testing all the platforms. Because Appium implements the WebDriver API you could technically write the same test for all platforms in the same language. This means that you could use an collection of interfaces in a single language and have that be your IDL.
+
+However still might be better off making your IDL language agnostic using some form of code generation instead. It can be surprising how often a project needs to be ported to another language for reasons outside your control.
 
 === Artistic Example
 
@@ -212,6 +223,7 @@ public class AndroidBuyProducts implements BuyProducts {
 
 Either implementation can be injected into the IDL. Now the tests have been scaled across platforms!
 
+[source,java]
 ----
 public class SomeStepDefinition {
 
