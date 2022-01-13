@@ -1,0 +1,252 @@
+= Overview
+The *Polymorphic Domain Specific Language* design pattern is used to make it possible to develop or test modern applications which are otherwise unable to be handled in a scalable, maintainable way.
+
+This is a particular necessity with the advent of distributed systems or the need to support multiple clients and platforms. A typical web application often has 2 native mobile applications developed for it as well. This creates a problem: to add or test 1 feature it takes _n_ units of work, where _n_ is the total number of clients, platforms or services.
+
+The reality is that conventional approaches do not scale. In a conventional distributed system dozens or hundreds of microservices are the norm. Quite often these services have functions of shared concern. For example, a store may have several APIs to update inventory. They may provide an endpoint for updating in bulk, one at a time through a UI and several other mechanisms suitable for different use cases. However they are all ultimately doing the same thing.
+
+In a situation like this development becomes highly error prone. Adding a very simple feature such as changing the maximum length of a required field might only be implemented one or a small subset of the services that handle that field. The other services might only become discovered after deploying the feature breaks one of the many services people couldn't keep track of. Rollbacks might become a common operation for what appeared to be simple work that actually had a complex web of interactions between services.
+
+The PDSL pattern elegantly resolves these sorts of problems and provides a variety of other desirable benefits that make it suitable for even the most demanding applications. 
+
+At it's heart the basic idea is to create a common protocol or language to describe your application or its data that is platform and language agnostic. Once this *loose external coupling* is achieved then the application can be either developed or tested using this grammar.
+
+== Architecture Overview
+
+A general model for PDSL is as follows:
+
+|===
+Tier | Development Tool Example | Testing Example | Testing Tool Example | Artistic Example | Testing Library Example |
+Domain Specific Language | JVM Bytecode or Language (Java, Kotlin, etc)  | Gherkin Standard | Webdriver Library | 12 Tone Scale |
+Specification Language   | .class File| .feature file | Java, Python, or other  | Code file | Vivaldi's _L'estro armonico_ |
+Interface Definition Language | Java Virtual Machine Specification | ANTLR4 | Webdriver API | Sheet Music |
+Implementation                        | OpenJDK, OracleJDK, JREs, etc   | Java, Python, Golang, TypeScript, etc | Java, Python, Golang, TypeScript, etc | _Concerto for 4 Violins in D minor_ by Antonio Vivaldi, also separate Harpsichord, Organ and other transcriptions by J.S Bach |
+|===
+
+
+== Domain Specific Language
+
+The Domain Specific Language (DSL) is the protocol or language used to create artifacts that tell an arbitrary implementer _what_ to do. In the PDSL pattern there is a preference for using DSLs in a declarative way because it provides flexibility for the implementors, but the DSL can still be used imperatively if needed.
+
+=== Development Example
+
+Java Bytecode is an example of something that can be used as a Domain Specific Language. Technically _Java Virtual Machine_ (JVM) languages and compiled bytecode are _General Purpose Languages_, but they can be used to create DSLs (such as a library with a specific, cross platform API).
+
+JVM Bytecode is an abstract instruction set. By itself it doesn't really provide information on _how_ to do something but is excellent and specifying _what_ to do. This provides Java's greatest strength of platform independence.
+
+IMPORTANT: The ability to create new programming languages that compile to bytecode and are able to run on the many JVM supported platforms highlights one of the strongest advantages of the PDSL design pattern: It can support _n_ frameworks in _O(1)_ time. Ordinarily a new language would have to spend years of resources to gradually support each individual platform, but the abstraction of bytecode allows new JVM languages to _immediately_ leverage these platforms *for free!*
+
+=== Testing Example
+
+_Gherkin_ is a protocol that was developed for the Cucumber framework. While initially created for the purposes of _Business Driven Developoment_, Gherkin is not only a powerful way of defining test cases, but it is language agnostic. This allows tests created in Gherkin to have multiple implementations for different platforms regardless of the different language needs of each platform.
+
+
+=== Artistic Example
+
+What is the difference between music and noise? That's been debated for a while. Perhaps a simple way of separating the noise made by a flying mosquito and the sound of you're favorite song would be to start by seeing what can be produced by the 12 tone scale.
+
+While this might be over simplistic, we've successfully excluded a _lot_ of potential sounds this way (hence we're _domain specific_) but we've managed to preserve most of the music created over the last few centuries.
+
+So the sound of running electrical appliances, rain and car engines aren't music in this scheme, but virtually all instrumental sounds are. From this base we can start using sounds that will be more likely to be pleasant and considered music to human listeners.
+
+== Specification Language
+
+The Specification Language (at least in the context of the _PDSL_ pattern) is an artifact produced by the DSL. These are often some sort of text or binary file, but as long as it is something that can be created by the DSL that explains how to do something it will be suitable for specifications.
+
+=== Development Example
+
+The _.class_ files produces by the compiled source code of a JVM language would be an example. The class files are essentially just bytecode, but it is bytecode that has been organized to execute some specific (and hopefully useful) program.
+
+Because the _.class_ files are just bytecode they can be interpreted later by _Java Runtime Environments_ on completely different platforms without requiring adjustments to the code.
+
+=== Testing Example
+
+The .feature files created by Gherkin:
+
+----
+Feature: Some Application
+
+  Scenario: Some Requirement
+    Given the expression "1 + 1"
+    When the expression is evaluated
+    Then the result is "2"
+----
+
+Feature files are easy to scale requirements across different applications or domains because they are language agnostic.
+
+=== Artistic Example
+
+Musical forms, such as a Ballad, Concerto or Fugue could be viewed as specifications or sub-specifications of a 12 tone DSL if you wanted to be particular. But more generally you could also just say a song is a specification of the DSL also (provided it's constrained to 12 pitches). 
+
+So a nursery rhyme like _Twinkle, Twinkle Little Star_ can count as a unique specification. So are the compositions of _J.S. Bach_ and modern pop artists.
+
+
+== Interface Definition Language
+
+The purpose of the Interface Definition Language (IDL) is to provide a bridge between our specifications and the (possibly many) clients that will executing it. While our specifications are technically already language agnostic, typically there may be a complex enough need to _interpret_ the specifications that it warrants it's own tier of architecture. That is to say we need a method of taking the highly abstract DSL and begin transforming it into something concrete that a client can understand.
+
+The IDL may handle some of the for _handling_ the specification and other supporting tasks required for processing the specification that are too general to be given to lower level implementations.
+
+Ideally the Interface Definition is 100% abstract or as abstract as possible. It should also typically language agnostic. Some use cases may have an IDL that is tightly coupled to a specific programming language or platform, but this should be avoided when possible to allow scaling to other platforms if needed.
+
+=== Development Example
+
+The Java Virtual Machine Specification (JVMS) has the job of converting bytecode into machine code, however the JVM _specification_ itself is platform agnostic.
+
+It describes how to do some other necessary work, such as garbage collection, loading class files, security and other infrastructure concerns.
+
+=== Testing Example
+
+==== Cucumber Step Definitions
+
+In traditional Cucumber Step Definition files are used as "glue code" to bind sentences to method execution. However a better alternative for PDSL might be something like ANTLR4, where you can perform the binding of a sentence to a particular method _but in a language agnostic way_. ANTLR4 allows you to use code generation to create interfaces in a variety of programming languages (including Swift and Java, which is probably important if you are developing native mobile apps).
+
+What prevents most standard Cucumber projects from following the PDSL pattern is they provide platform specific code in the step definitions. If these are instead replaced with fully abstract interfaces the tests can instead scale to multiple platforms or even tiers of the testing pyramid.
+
+Here is an example of using step definitions poorly (it cannot scale out)
+
+----
+public class SomeStepDefinition {
+
+	// Oh no! This step definition will only be usable for web tests! We'll need to rewrite all of
+	// this again for the android application!
+	private WebDriver webDriver;
+
+	@Given("the customer selects a product in the store")
+	public void givenTheExpression(int x, int y) {
+		webDriver.get("some-store.com");
+		webDriver.findElement(By.id("some-product")).click();		
+	}
+}
+----
+
+Here the problem is used by creating an Interface Definition Language with simple interfaces
+
+----
+
+public interface BuyProducts {
+	void selectProduct();
+}
+
+public class SomeStepDefinition {
+
+	// Initialize with dependency injection
+	private BuyProducts buyProducts;
+
+	@Given("the customer selects a product in the store")
+	public void givenTheExpression(int x, int y) {
+		// The interface can have a web, android and iOS implementation.
+		// They can use the libraries or frameworks that make sense for them
+		buyProducts.selectProduct();
+	}
+}
+----
+
+The mere act of using interfaces means that a feature change won't require rewriting _n_ different frameworks. In a best case we just need to update the code in a single location. However we might need another step definition file written in Swift for an iOS codebase. But If ANTLR4 was used to create the IDL instead it's even better: we can keep _all_ different codebases in sync by generating the interface code from an ANTLR grammar!
+
+=== Artistic Example
+
+For a long time musicians didn't use notation to preserve their songs. Many just played from memory and learned by ear.
+
+Western Staff Notation is an example of a robust method to write music using scales. In addition to the notes other expressive markings can be used to provide advice on how the composer intended the piece to be interpreted. However the musician typically has license to play the piece differently if they are inclined to do so.
+
+== Client
+
+The Clients are actual concrete implementations that interact with the Interface Definition Language. At this point they code can  be idiomatic and safely coupled to a specific language or platform. Since the clients follow a common API or contract but vary enough to be useful within different contexts we can say that they are _polymorphic_ at this point.
+
+=== Programming Example
+
+The Java Runtime Environment (JRE) is what executes bytecode on a specific system. At this point we may have bytecode that means "open a file", but the method of doing that on Mac, Windows or Linux is going to be different. There is a JRE for each of these platforms (as well as many others) that are able to understand _how_ to perform these types of operations on that system.
+
+By having the source code compile to bytecode and interpreted by the JVM we can confidently share code across many platforms without having to recompile it. With a specific JRE for that platform we have a method for executing that code in a way that both makes sense and is understandable by that system.
+
+==== Testing Example
+
+Providing specific implementations for the IDL we can make sure we can change a test and yet still expect multiple test frameworks to notice the change and be in sync!
+
+First an interface is generated by or written from the IDL:
+[source,java]
+----
+public interface BuyProducts {
+	void selectProduct();
+}
+----
+
+Then one implementation can be produced:
+
+[source,java]
+----
+
+public class WebBuyProducts implements BuyProducts {
+	
+	// Uses WebDriver API. 
+	private WebDriver webDriver;
+
+	// Constructors ommitted
+
+	public void selectProduct() {
+		webDriver.get("some-store.com");
+		webDriver.findElement(By.id("some-product")).click();		
+	}
+}
+
+----
+
+And then another:
+
+[source,java]
+----
+
+public class AndroidBuyProducts implements BuyProducts {
+
+	// Using the Espresso testing framework
+
+	public void selectProduct() {
+		onView(withId(R.id.product_view),withText("Some Product"))
+		.perform(click())
+		.check(matches(withText("Product added to cart!")))
+	}
+}
+
+----
+
+Either implementation can be injected into the IDL. Now the tests have been scaled across platforms!
+
+----
+public class SomeStepDefinition {
+
+	// The AndroidBuyProducts or WebBuyProducts can be added to this IDL and a single
+	// test will run on both platforms.
+	public SomeStepDefinition(BuyProducts buyProducts) {
+		this.buyProducts = buyProducts;
+	}
+
+	// Initialize with dependency injection
+	private BuyProducts buyProducts;
+
+	@Given("the customer selects a product in the store")
+	public void givenTheExpression(int x, int y) {
+		// The interface can have a web, android and iOS implementation.
+		// They can use the libraries or frameworks that make sense for them
+		buyProducts.selectProduct();
+	}
+}
+----
+
+For a sample project we'll have you write tests for a calculator using Java. This may seem trivial but it will highlight a crucial point: the calculator has been re-implemented countless times _and they don't work the same way!_
+
+PDSL works like this:
+
+- Using a DSL (such as gherkin, json, xml or anything else you want)
+- Create test specifications
+- Which are turned into test cases
+- That can be understood by multiple languages/clients/platforms
+
+
+=== Artistic Example
+
+Antonio Vivaldi wrote a collection of concertos called _L'estro armonico_ that was very much loved. Because it was written in sheet music it was easy for other composers (such as J.S Bach) to transpose them to other instruments. The music originally written for string instruments was adapted for harpsichord, organ and many other instruments as well.
+
+Sheet music also made it feasible to transpose music into another key which made it possible for vocalists that where unable to sing as high or low as the piece demanded to have a version that fit comfortably within their range.
+
+Despite being in a different key or being played by a different instrument the piece was more or less the same.
