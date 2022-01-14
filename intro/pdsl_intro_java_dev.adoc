@@ -1,0 +1,69 @@
+= Introduction to PDSL for Java Developers
+
+The Polymorphic Domain Specific Language pattern can be used to not only create highly scalable software but languages themselves. Java in particular stands out by its ability to be platform independent. JVM languages actually meet the criteria of being a tool that natively _follows_ the PDSL pattern. This actually is not that surprising a coincidence: the purpose of PDSL to to be able to be _highly scalable_ and _highly maintainable_ despite the complexities of the underlying program.
+
+
+== Architecture Overview
+
+A general model for PDSL is as follows:
+
+.Polymorphic DSL Basic Model
+[cols="1,1,1,1,1"]
+|===
+Tier | Development Tool Example | Testing Example | Testing Tool Example | Artistic Example 
+Domain Specific Language | JVM Bytecode or Language (Java, Kotlin, etc)  | Gherkin Standard |  12 Tone Scale 
+Specification Language   | .class File| .feature file | Java, Python, or other  | Code file | Vivaldi's _L'estro armonico_ 
+Interface Definition Language | Java Virtual Machine Specification | ANTLR4 | Webdriver API | Sheet Music 
+Implementation                        | OpenJDK, OracleJDK, JREs, etc   | Java, Python, Golang, TypeScript, etc | Java, Python, Golang, TypeScript, etc | _Concerto for 4 Violins in D minor_ by Antonio Vivaldi, also separate Harpsichord, Organ and other transcriptions by J.S Bach 
+|===
+
+
+== Domain Specific Language
+
+The Domain Specific Language (DSL) is the protocol or language used to create artifacts that tell an arbitrary implementer _what_ to do. In the PDSL pattern there is a preference for using DSLs in a declarative way because it provides flexibility for the implementors, but the DSL can still be used imperatively if needed.
+
+=== Development Example
+
+Java Bytecode is an example of something that can be used as a Domain Specific Language. Technically _Java Virtual Machine_ (JVM) languages and compiled bytecode are _General Purpose Languages_, but they can be used to create DSLs (such as a library with a specific, cross platform API).
+
+JVM Bytecode is an abstract instruction set. By itself it doesn't really provide information on _how_ to do something but is excellent and specifying _what_ to do. This provides Java's greatest strength of platform independence.
+
+IMPORTANT: The ability to create new programming languages that compile to bytecode and are able to run on the many JVM supported platforms highlights one of the strongest advantages of the PDSL design pattern: It can support _n_ frameworks in _O(1)_ time. Ordinarily a new language would have to spend years of resources to gradually support each individual platform, but the abstraction of bytecode allows new JVM languages to _immediately_ leverage these platforms *for free!*
+
+== Specification Language
+
+The Specification Language (at least in the context of the _PDSL_ pattern) is an artifact produced by the DSL. These are often some sort of text or binary file, but as long as it is something that can be created by the DSL that explains how to do something it will be suitable for specifications.
+
+=== Development Example
+
+The _.class_ files produces by the compiled source code of a JVM language would be an example. The class files are essentially just bytecode, but it is bytecode that has been organized to execute some specific (and hopefully useful) program.
+
+Because the _.class_ files are just bytecode they can be interpreted later by _Java Runtime Environments_ on completely different platforms without requiring adjustments to the code.
+
+== Interface Definition Language
+
+The purpose of the Interface Definition Language (IDL) is to provide a bridge between our specifications and the (possibly many) clients that will executing it. While our specifications are technically already language agnostic, typically there may be a complex enough need to *interpret* the specifications that it warrants it's own tier of architecture. That is to say we need a method of taking the highly abstract DSL and begin transforming it into something concrete that a client can understand.
+
+The IDL may also be used for *handling* the specification or *coordinating* or *transforming* information from the abstract specification into more concrete data that will be needed by lower level implementations.
+
+Ideally the Interface Definition is 100% abstract or as abstract as possible. It should also typically language agnostic. Some use cases may have an IDL that is tightly coupled to a specific programming language or platform, but this should be avoided when possible to allow scaling to other platforms if needed.
+
+=== Development Example
+
+The Java Virtual Machine Specification (JVMS) has the job of converting bytecode into machine code, however the JVM _specification_ itself is platform agnostic.
+
+It describes how to do some other necessary work, such as garbage collection, loading class files, security and other infrastructure concerns.
+
+Ultimately if a new platform wants to support Java it can use the JVMS to create a new JVM for itself.
+
+== Client
+
+The Clients are actual concrete implementations that interact with the Interface Definition Language. At this point they code can  be idiomatic and safely coupled to a specific language or platform. Since the clients follow a common API or contract but vary enough to be useful within different contexts we can say that they are _polymorphic_ at this point.
+
+=== Programming Example
+
+The Java Runtime Environment (JRE) is what executes bytecode on a specific system. At this point we may have bytecode that means "open a file", but the method of doing that on Mac, Windows or Linux is going to be different. There is a JRE for each of these platforms (as well as many others) that are able to understand _how_ to perform these types of operations on that system.
+
+By having the source code compile to bytecode and interpreted by the JVM we can confidently share code across many platforms without having to recompile it. With a specific JRE for that platform we have a method for executing that code in a way that both makes sense and is understandable by that system.
+
+

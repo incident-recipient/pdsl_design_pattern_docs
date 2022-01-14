@@ -1,0 +1,57 @@
+= Introduction to PDSL for Artists
+
+Modern applications get big. _Really big_. A development team does its best not to reinvent the wheel, but the cold hard reality is that they're often forced to. Every new programming language needs to learn how to add numbers. _The calculator gets reinvented for every single one._ *Usually differently!*
+
+Technical details can be unhelpful and confusing. But if you have ever had to read sheet music or played an instrument then this document will be more friendly to read.
+
+:toc:
+
+
+== Domain Specific Language
+
+The Domain Specific Language (DSL) is the protocol or language used to create artifacts that tell an arbitrary implementer _what_ to do. In the PDSL pattern there is a preference for using DSLs in a declarative way because it provides flexibility for the implementors, but the DSL can still be used imperatively if needed.
+
+=== Artistic Example
+
+What is the difference between music and noise? That's been debated for a while. Perhaps a simple way of separating the noise made by a flying mosquito and the sound of you're favorite song would be to start by seeing what can be produced by the 12 tone scale.
+
+While this might be over simplistic, we've successfully excluded a _lot_ of potential sounds this way (hence we're _domain specific_) but we've managed to preserve most of the music created over the last few centuries.
+
+So the sound of running electrical appliances, rain and car engines aren't music in this scheme, but virtually all instrumental sounds are. From this base we can start using sounds that will be more likely to be pleasant and considered music to human listeners.
+
+== Specification Language
+
+The Specification Language (at least in the context of the _PDSL_ pattern) is an artifact produced by the DSL. These are often some sort of text or binary file, but as long as it is something that can be created by the DSL that explains how to do something it will be suitable for specifications.
+
+=== Artistic Example
+
+Musical forms, such as a Ballad, Concerto or Fugue could be viewed as specifications or sub-specifications of a 12 tone DSL if you wanted to be particular. But more generally you could also just say a song is a specification of the DSL provided it's constrained to 12 pitches. 
+
+So a nursery rhyme like _Twinkle, Twinkle Little Star_ can count as a unique specification. So are the compositions of _J.S. Bach_ and modern pop artists.
+
+
+== Interface Definition Language
+
+The purpose of the Interface Definition Language (IDL) is to provide a bridge between our specifications and the (possibly many) clients that will executing it. While our specifications are technically already language agnostic, typically there may be a complex enough need to *interpret* the specifications that it warrants it's own tier of architecture. That is to say we need a method of taking the highly abstract DSL and begin transforming it into something concrete that a client can understand.
+
+The IDL may also be used for *handling* the specification or *coordinating* or *transforming* information from the abstract specification into more concrete data that will be needed by lower level implementations.
+
+Ideally the Interface Definition is 100% abstract or as abstract as possible. It should also typically language agnostic. Some use cases may have an IDL that is tightly coupled to a specific programming language or platform, but this should be avoided when possible to allow scaling to other platforms if needed.
+
+=== Artistic Example
+
+For a long time musicians didn't use notation to preserve their songs. Many just played from memory and learned by ear.
+
+Western Staff Notation is an example of a robust method to write music using scales. In addition to the notes other expressive markings can be used to provide advice on how the composer intended the piece to be interpreted. However the musician typically has license to play the piece differently if they are inclined to do so.
+
+== Client
+
+The Clients are actual concrete implementations that interact with the Interface Definition Language. At this point they code can  be idiomatic and safely coupled to a specific language or platform. Since the clients follow a common API or contract but vary enough to be useful within different contexts we can say that they are _polymorphic_ at this point.
+
+=== Artistic Example
+
+Antonio Vivaldi wrote a collection of concertos called _L'estro armonico_ that was very much loved. Because it was written in sheet music it was easy for other composers (such as J.S Bach) to transpose them to other instruments. The music originally written for string instruments was adapted for harpsichord, organ and many other instruments as well.
+
+Sheet music also made it feasible to transpose music into another key which made it possible for vocalists that where unable to sing as high or low as the piece demanded to have a version that fit comfortably within their range.
+
+Despite being in a different key or being played by a different instrument the piece was more or less the same, but able to be happily performed by many different musicians.
