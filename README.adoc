@@ -50,7 +50,7 @@ Eventually everyone in the country gets fed up with this kind of trouble and dec
 
 Some overviews with analogies that might be more familiar to specific roles are provided below
 
-link:intro/pdsl_intro_java_dev.adoc[Java Developers]
-link:intro/pdsl_intro_tester.adoc[Software Testers]
-link:intro/pdsl_intro_artists.adoc[Non-Technical]
+* link:intro/pdsl_intro_java_dev.adoc[Java Developers]
+* link:intro/pdsl_intro_tester.adoc[Software Testers]
+* link:intro/pdsl_intro_artists.adoc[Non-Technical]
 
